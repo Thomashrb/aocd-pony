@@ -1,0 +1,23 @@
+{
+  "packages": [
+    "aocd"
+  ],
+  "deps": [
+    {
+      "locator": "github.com/ponylang/appdirs.git",
+      "version": "0.1.4"
+    },
+    {
+      "locator": "github.com/ponylang/http.git",
+      "version": "0.4.4"
+    }
+  ],
+  "info": {
+    "description": "Library for getting and caching advent of code data | aocd",
+    "homepage": "https://github.com/Thomashrb/aocd-pony",
+    "license": "BSD-2-Clause",
+    "documentation_url": "https://github.com/Thomashrb/aocd-pony",
+    "version": "0.1.0",
+    "name": "aocd"
+  }
+}
