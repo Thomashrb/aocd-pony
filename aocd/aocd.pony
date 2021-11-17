@@ -1,4 +1,6 @@
+use "files"
 use "promises"
+use "net"
 
 actor Aocd
 
@@ -6,24 +8,25 @@ actor Aocd
   Get your aoc data here!
   This is the intended library entrypoint.
   """
-  let _env: Env
+  let _cache_path: FilePath
   let _token: String
+  let _tcp_auth: TCPAuth
 
-  new create(env: Env, token: String) =>
-    _env = env
+  new create(cache_path: FilePath, token: String, tcp_auth: TCPAuth) =>
+    _cache_path = cache_path
     _token = token
+    _tcp_auth = tcp_auth
 
-  be run_input(year: U16, day: U8, callback: {(String)} val) =>
+  be get_input(year: U16, day: U8, p: Promise[String]) =>
     """
     Attempt to load String input from cache and if not exists
     request input from api to cache then load it"
     """
-    let p = Promise[String]
-    let cache: Cache val = recover val Cache(_env, year, day) end
+    let cache: Cache val = recover val Cache(_cache_path, year, day) end
 
     try
-      callback(cache.cat()?)
+      p(cache.cat()?)
     else
-      Client(_env, year, day, _token, p)
-      p.next[None]({(s: String)? => callback(cache.write_cat(s)?) })
+      Client(_tcp_auth, year, day, _token, p)
+      p.next[None]({(s: String)? => p(cache.write_cat(s)?) })
     end

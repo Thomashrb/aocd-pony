@@ -12,7 +12,7 @@ pony version of my [clojure version](https://github.com/Thomashrb/advent-of-code
 ## Installation
 - Install [corral](https://github.com/ponylang/corral)
 - `corral init`
-- `corral add github.com/Thomashrb/aocd-pony.git --version 0.1.0`
+- `corral add github.com/Thomashrb/aocd-pony.git --version 0.1.1`
 - `corral fetch` to fetch your dependencies
 - `use "aocd"` to include this package
 - `corral run -- ponyc` to compile your application
@@ -22,7 +22,39 @@ Note: The net-ssl transitive dependency requires a C SSL library to be installed
 
 ## Usage
 
-### construct your function so it takes a String as input 
+### instanciate library class
+
+The library class requires 3 arguments
+
+- FilePath -- to store cache files
+- String -- session token (see below)
+- TCPAuth
+
+``` pony
+let file_path = FilePath(env.root as AmbientAuth, "/home/<user>/.cache/aocd").>mkdir()
+let token = "<YOUR SESSION TOKEN>"
+let tcp_auth = TCPAuth(env.root as AmbientAuth)
+
+let aocd = Aocd(file_path, token, tcp_auth)
+```
+
+### use `get_input` to get data in Promise[String]
+
+``` pony
+let p = Promise[String]
+aocd.get_input(2020, 1)
+
+// use promise as you wish
+p.next[None]({(s: String) =>
+              env.out.print("Day1 part1 solve: " +
+              Day1.solve_part1(s).string()) })
+```
+
+### Use your Promise[String]
+
+If your aoc solve function takes a string directly something
+like this can be done:
+
 
 ```pony
 fun solve_part1(input: String, target_sum: USize = 2020): (USize val | None) =>
@@ -35,29 +67,11 @@ end
 
 ``` 
 
-### instanciate library class with token
-``` pony
-let aocd = Aocd(env, <YOUR SESSION TOKEN>)
-```
-
-### use `run_input` to run your input in a callback
-
-``` pony
-aocd.run_input(2020, 1, {(s: String) => solve_part1(s).string())})
-```
-
-## Where are inputs cached
-
-``` bash
-# $HOME/.cache/aocd/<year>/<day>/input.txt
-
-❯ ls ~/.cache/aocd/2020/1/
-input.txt
-```
+_see examples/2020day1-example.pony for a full example_
 
 ## Run example
 
-Add your own token (see below)
+Add personal token (see below)
 
 ``` bash
 ❯ grep "let token" examples/2020day1-example.pony
@@ -65,9 +79,26 @@ Add your own token (see below)
 ```
 
 Build and execute examples 
+
 ```bash
 $ make run-examples
 ```
+
+
+## Where are inputs cached
+
+Inputs are cached as `input.txt` files in the directory set in the Aocd constructor
+with <year> and <day> appended like so:
+
+``` bash
+# if my Aocd constructor base directory is $HOME/.cache/aocd 
+# then my cache input is stored as follows
+# $HOME/.cache/aocd/<year>/<day>/input.txt
+
+❯ ls ~/.cache/aocd/2020/1/
+input.txt
+```
+
 
 ## How to get session token
 

@@ -1,17 +1,16 @@
 use "files"
-use "appdirs"
 
 class Cache
-  let _env: Env
+  let _base: FilePath
   let _year: U16
   let _day: U8
   let _app_name: String = "aocd"
   let _fn: String = "input.txt"
 
-  new create(env: Env, year: U16, day: U8) =>
-    _env = env
+  new create(base: FilePath, year: U16, day: U8) =>
     _year = year
     _day = day
+    _base = base
 
   fun write_cat(input: String, readLen: USize = 999999999): String? =>
     _write(input, readLen)
@@ -31,14 +30,10 @@ class Cache
         .create_file(_fn)?
         .>write(input)
         .>flush()
-      else
-        _env.out.print("-- Cache/write failed --")
     end
 
   fun _cache_dir(): Directory? =>
-    let path = AppDirs(_env.vars, _app_name).user_cache_dir()?
-    let base = FilePath(_env.root as AmbientAuth, path).>mkdir()
-    Directory(base)?
+    Directory(_base)?
 
   fun _mkdir(): None?  =>
     _cache_dir()?

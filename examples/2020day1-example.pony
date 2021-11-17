@@ -1,15 +1,28 @@
 use "../aocd"
 use "collections"
+use "files"
+use "net"
+use "promises"
 
 actor Main
   new create(env: Env) =>
-    let token = "YOUR TOKEN"
-    let aocd = Aocd(env, token)
+    // SOLVE TEST INPUT
     let test_input = Day1.test_input()
     env.out.print("Day1 part1 test: " + Day1.solve_part1(test_input).string())
-    aocd.run_input(2020, 1, {(s: String) =>
-                              env.out.print("Day1 part1 solve: " +
-                              Day1.solve_part1(s).string()) })
+
+    // SOLVE `REAL` INPUT
+    try
+      let p = Promise[String]
+      let aocd = Aocd(
+        FilePath(env.root as AmbientAuth, "build/cache/aocd").>mkdir(),
+        "YOUR SECRET",
+          TCPAuth(env.root as AmbientAuth))
+
+      aocd.get_input(2020, 1, p)
+      p.next[None]({(s: String) =>
+                    env.out.print("Day1 part1 solve: " +
+                    Day1.solve_part1(s).string()) })
+    end
 
 
 primitive Day1

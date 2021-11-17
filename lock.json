@@ -5,10 +5,6 @@
       "revision": "1.1.6"
     },
     {
-      "locator": "github.com/ponylang/appdirs.git",
-      "revision": "0.1.4"
-    },
-    {
       "locator": "github.com/ponylang/http.git",
       "revision": "0.4.4"
     }
